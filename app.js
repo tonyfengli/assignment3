@@ -31,6 +31,47 @@ window.onload = function () {
     
 };
 
+//function to check whether the user won or lost the game, and then resets the game
+function resetGame () {
+    function printReset () {
+        $("#wins").html("Wins: " + wins);
+        $("#losses").html("Losses: " + losses);
+        $("#guesses-remaining").html("Guesses Remaining: " + guessesRemaining);
+        $("#current-word").html(currentWord);
+        $("#letters").html(letters);
+    }
+
+    function variableReset() {
+        guessesRemaining = 10;
+        letters = [];
+        lettersGuessed = [];
+        resetCurrentWord();
+    }
+
+    // helper to check currentWord against the word to guess
+    currentWord.toString("");
+
+    if (currentWord.join("") === wordGuess[wordIndex]) {
+        alert("you win");
+        //resets all the variables
+        wins++;
+        wordIndex++;
+        variableReset()
+        // prints resetted variables
+        printReset();
+
+        
+        
+    } else if (guessesRemaining === 0) {
+        alert("you lose");
+        //resets all the variables
+        losses++;
+        variableReset()
+        // prints resetted variables
+        printReset();
+    };
+};
+
 
 var wordArray = wordGuess[wordIndex].split("");
 
@@ -74,46 +115,7 @@ document.onkeyup = function (event) {
             }
         }();
         
-        //function to check whether the user won or lost the game, and then resets the game
-        var resetGame = function () {
-            function printReset () {
-                $("#wins").html("Wins: " + wins);
-                $("#losses").html("Losses: " + losses);
-                $("#guesses-remaining").html("Guesses Remaining: " + guessesRemaining);
-                $("#current-word").html(currentWord);
-                $("#letters").html(letters);
-            }
-
-            function variableReset() {
-                guessesRemaining = 10;
-                letters = [];
-                lettersGuessed = [];
-                resetCurrentWord();
-            }
-
-            // helper to check currentWord against the word to guess
-            currentWord.toString("");
-
-            if (currentWord.join("") === wordGuess[wordIndex]) {
-                alert("you win");
-                //resets all the variables
-                wins++;
-                wordIndex++;
-                variableReset()
-                // prints resetted variables
-                printReset();
-
-                
-                
-            } else if (guessesRemaining === 0) {
-                alert("you lose");
-                //resets all the variables
-                losses++;
-                variableReset()
-                // prints resetted variables
-                printReset();
-            };
-        }();
+        resetGame();
     }
 };
 
@@ -137,13 +139,21 @@ $(document).ready(function() {
     
     // creates an array (i.e. 1,2,3,4,5,6) based on the length of 'Word to Guess'
     var indexArray = [];
-    for (var i = 1; i < wordArray.length; i++) {
-    indexArray.push(i);
-    }
-  
+
     // clicking hint to give you an answer to one random letter in the word
     $("#hint").on("click", function(event) {
-        event.preventDefault();
+
+        //creates a new array that provides indexes of a characters with "-"
+        function getAllIndexes(arr, val) {
+            var indexes = [], i = -1;
+            while ((i = arr.indexOf(val, i+1)) != -1){
+                indexes.push(i);
+            }
+            return indexes;
+        }
+    
+        var indexArray = getAllIndexes(currentWord, "-");
+
         //converts word to guess from string to an array
         var wordArray = wordGuess[wordIndex].split("");
         // guesses a number with the 'Word to Guess' length as the max
@@ -151,7 +161,12 @@ $(document).ready(function() {
         index1 = indexArray.splice(index,1);
         currentWord[index1] = wordArray[index1];
         $("#current-word").html(currentWord);
-    });
+
+        resetGame();
+
+ 
+    }); 
 
 });
+
 
